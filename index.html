@@ -773,7 +773,7 @@
     <header>
       <div class="title">
         <span>🏆</span>
-        <span style="-webkit-text-fill-color:revert"></span> <!-- Удалена надпись -->
+        <span style="-webkit-text-fill-color:revert"></span>
         <span>🏆</span>
       </div>
     </header>
@@ -784,13 +784,6 @@
         <div class="stat-content">
           <h3>Total FTD</h3>
           <div class="stat-value" id="grand-total">0</div>
-        </div>
-      </div>
-      <div class="stat-card" data-tooltip="Количество команд">
-        <div class="stat-icon">👥</div>
-        <div class="stat-content">
-          <h3>Teams</h3>
-          <div class="stat-value" id="teams-count">0</div>
         </div>
       </div>
       <div class="stat-card" data-tooltip="Лучший результат">
@@ -832,12 +825,11 @@
   MAX_CONCURRENT_EFFECTS: 2,
   PARTICLES_COUNT: 20,
   SOUNDS: {
-    achievement: 'https://raw.githubusercontent.com/exellentyes-hue/sales-leaderboard/blob/main/videoplayback.mp3', // ваш файл
-    levelUp: 'https://raw.githubusercontent.com/exellentyes-hue/sales-leaderboard/blob/main/videoplayback.mp3', // ваш файл
+    achievement: 'https://raw.githubusercontent.com/exellentyes-hue/sales-leaderboard/main/videoplayback.mp3',
+    levelUp: 'https://raw.githubusercontent.com/exellentyes-hue/sales-leaderboard/main/videoplayback.mp3',
   },
   THEME: 'dark'
 };
-
 
   const state = {
     soundEnabled: false,
@@ -910,23 +902,18 @@
   function playSound(type = 'achievement'){
     if (!state.soundEnabled) return;
 
-    // Используем ваш звук для обоих типов (achievement и levelUp)
     const soundUrl = CONFIG.SOUNDS[type];
-
-    // Найдем неиграющий звук в пуле
     const audio = state.soundPool.find(a => a.src === soundUrl && a.paused);
     
     if(audio){
       audio.currentTime = 0;
       audio.play().catch(err => console.warn('[Sound] play error:', err));
     } else {
-      // Если звуки не были проиграны, загрузим и воспроизведем новый
       const newSound = new Audio(soundUrl);
       newSound.volume = 0.7;
       newSound.play().catch(err => console.warn('[Sound] play error:', err));
     }
-}
-
+  }
 
   function initToolbar(){
     const btnAudio = document.getElementById('btn-audio');
@@ -1194,13 +1181,13 @@
       if(diff > 0){
         element.classList.add('major-increase', 'ripple-effect');
         createEnhancedSparkles(element);
-        playSound('levelUp'); // Воспроизведем ваш звук для больших изменений
+        playSound('levelUp');
       } else {
         element.classList.add('major-decrease');
       }
     } else if(diff > 0){
       element.classList.add('increasing');
-      playSound('achievement'); // Воспроизведем ваш звук для нормальных изменений
+      playSound('achievement');
     } else {
       element.classList.add('decreasing');
     }
@@ -1386,7 +1373,6 @@
     existingCards.forEach(card => card.remove());
     
     animateFTDValue(document.getElementById('grand-total'), grandTotal, parseInt(document.getElementById('grand-total').textContent) || 0);
-    animateFTDValue(document.getElementById('teams-count'), teamNames.length, parseInt(document.getElementById('teams-count').textContent) || 0);
     animateFTDValue(document.getElementById('top-score'), topScore, parseInt(document.getElementById('top-score').textContent) || 0);
   }
 
