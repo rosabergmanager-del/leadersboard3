@@ -106,11 +106,15 @@
             min-height: 300px;
             align-items: flex-start;
             justify-content: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: visible;
         }
 
         .team-column {
-            min-width: 280px;
+            min-width: 240px;
+            max-width: 280px;
+            flex-shrink: 0;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
             backdrop-filter: blur(10px);
             border-radius: 20px;
@@ -119,7 +123,7 @@
             border: 1px solid rgba(99, 102, 241, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(59, 130, 246, 0.05);
             position: relative;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -133,15 +137,15 @@
         }
 
         .team-icon {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-size: 24px;
+            margin-right: 12px;
+            font-size: 20px;
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
             animation: iconPulse 3s ease-in-out infinite;
         }
@@ -152,7 +156,7 @@
         }
 
         .team-name {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #93c5fd;
             text-shadow: 0 0 10px rgba(147, 197, 253, 0.4);
@@ -255,12 +259,12 @@
 
         .agent-name {
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1em;
             color: #e0e0e0;
         }
 
         .agent-ftd {
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: bold;
             padding: 5px 10px;
             background: rgba(59, 130, 246, 0.2);
@@ -293,21 +297,9 @@
         }
         
         .team-total-value {
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: #34d399;
             text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
-        }
-        
-        .team-column {
-            min-width: 320px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            animation: slideInUp 0.8s ease;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(59, 130, 246, 0.05);
-            position: relative;
         }
 
         .celebration {
@@ -582,7 +574,7 @@
         /* Адаптация для Android TV */
         @media screen and (min-width: 1920px) {
             .header h1 { font-size: 3.5em; }
-            .team-column { min-width: 350px; }
+            .team-column { min-width: 300px; max-width: 350px; }
             .agent-card { padding: 10px 14px; }
             .agent-name { font-size: 1em; }
             .agent-ftd { font-size: 1.2em; }
@@ -618,6 +610,26 @@
         
         .team-column::-webkit-scrollbar-thumb {
             background: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Для узких экранов */
+        @media screen and (max-width: 768px) {
+            .team-column {
+                min-width: 200px;
+                max-width: 220px;
+            }
+            
+            .team-name {
+                font-size: 1.1em;
+            }
+            
+            .agent-name {
+                font-size: 0.9em;
+            }
+            
+            .agent-ftd {
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
