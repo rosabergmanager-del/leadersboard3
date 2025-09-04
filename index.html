@@ -101,20 +101,20 @@
 
         .teams-container {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             padding: 15px 0;
             min-height: 300px;
             align-items: flex-start;
-            justify-content: center;
+            justify-content: stretch;
             flex-wrap: nowrap;
             overflow-x: auto;
             overflow-y: visible;
+            width: 100%;
         }
 
         .team-column {
-            min-width: 240px;
-            max-width: 280px;
-            flex-shrink: 0;
+            flex: 1;
+            min-width: 0;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
             backdrop-filter: blur(10px);
             border-radius: 20px;
@@ -160,6 +160,9 @@
             font-weight: bold;
             color: #93c5fd;
             text-shadow: 0 0 10px rgba(147, 197, 253, 0.4);
+            word-break: break-word;
+            text-align: center;
+            flex: 1;
         }
 
         .agent-card {
@@ -261,6 +264,9 @@
             font-weight: bold;
             font-size: 1em;
             color: #e0e0e0;
+            word-break: break-word;
+            flex: 1;
+            margin-right: 10px;
         }
 
         .agent-ftd {
@@ -271,6 +277,7 @@
             border-radius: 10px;
             color: #60a5fa;
             text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+            flex-shrink: 0;
         }
 
         .ftd-increase {
@@ -574,7 +581,7 @@
         /* Адаптация для Android TV */
         @media screen and (min-width: 1920px) {
             .header h1 { font-size: 3.5em; }
-            .team-column { min-width: 300px; max-width: 350px; }
+            .team-column { padding: 15px 20px; }
             .agent-card { padding: 10px 14px; }
             .agent-name { font-size: 1em; }
             .agent-ftd { font-size: 1.2em; }
@@ -614,9 +621,14 @@
 
         /* Для узких экранов */
         @media screen and (max-width: 768px) {
+            .teams-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
             .team-column {
-                min-width: 200px;
-                max-width: 220px;
+                flex: none;
+                max-height: 400px;
             }
             
             .team-name {
@@ -629,6 +641,17 @@
             
             .agent-ftd {
                 font-size: 1.1em;
+            }
+        }
+
+        /* Адаптация для широких экранов */
+        @media screen and (min-width: 1200px) {
+            .teams-container {
+                gap: 20px;
+            }
+            
+            .team-column {
+                padding: 20px;
             }
         }
     </style>
@@ -964,34 +987,34 @@
         }
         
         function showAgentAnnouncement(stageName, ftdCount) {
-    const announcement = document.createElement('div');
-    announcement.className = 'agent-announcement';
+            const announcement = document.createElement('div');
+            announcement.className = 'agent-announcement';
 
-    const row = document.createElement('div');
-    row.className = 'agent-announcement-row';
+            const row = document.createElement('div');
+            row.className = 'agent-announcement-row';
 
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'agent-announcement-name';
-    nameSpan.textContent = stageName.toUpperCase();
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'agent-announcement-name';
+            nameSpan.textContent = stageName.toUpperCase();
 
-    const colonSpan = document.createElement('span');
-    colonSpan.className = 'agent-announcement-colon';
-    colonSpan.textContent = ':';
+            const colonSpan = document.createElement('span');
+            colonSpan.className = 'agent-announcement-colon';
+            colonSpan.textContent = ':';
 
-    const ftdSpan = document.createElement('span');
-    ftdSpan.className = 'agent-announcement-ftd';
-    ftdSpan.textContent = ftdCount;
+            const ftdSpan = document.createElement('span');
+            ftdSpan.className = 'agent-announcement-ftd';
+            ftdSpan.textContent = ftdCount;
 
-    row.appendChild(nameSpan);
-    row.appendChild(colonSpan);
-    row.appendChild(ftdSpan);
-    announcement.appendChild(row);
-    document.body.appendChild(announcement);
+            row.appendChild(nameSpan);
+            row.appendChild(colonSpan);
+            row.appendChild(ftdSpan);
+            announcement.appendChild(row);
+            document.body.appendChild(announcement);
 
-    setTimeout(() => {
-        announcement.remove();
-    }, 3000);
-}
+            setTimeout(() => {
+                announcement.remove();
+            }, 3000);
+        }
         
         function createConfetti() {
             const colors = ['#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#f87171'];
