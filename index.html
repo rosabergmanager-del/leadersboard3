@@ -168,8 +168,8 @@
         .agent-card {
             background: rgba(30, 41, 59, 0.6);
             border-radius: 10px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
             position: relative;
             transition: all 0.3s ease;
             border: 1px solid rgba(99, 102, 241, 0.2);
@@ -258,28 +258,83 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .agent-name {
             font-weight: bold;
-            font-size: 1em;
+            font-size: 1.1em;
             color: #e0e0e0;
             word-break: break-word;
             flex: 1;
-            margin-right: 10px;
+            min-width: 150px;
+        }
+
+        .agent-ftd-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .agent-ftd {
-            font-size: 1.2em;
-            font-weight: bold;
             padding: 5px 10px;
             background: rgba(59, 130, 246, 0.2);
             border-radius: 10px;
-            color: #60a5fa;
             text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
             flex-shrink: 0;
+            text-align: center;
+            min-width: 60px;
         }
 
+        .agent-ftd.daily {
+            background: rgba(52, 211, 153, 0.2);
+            border: 1px solid rgba(52, 211, 153, 0.5);
+        }
+
+        .agent-ftd.monthly {
+            background: rgba(96, 165, 250, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.5);
+        }
+
+        .ftd-label {
+            font-size: 0.7em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ftd-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #60a5fa;
+            transition: all 0.3s ease;
+        }
+
+        .agent-ftd.daily .ftd-value {
+            color: #34d399;
+        }
+
+        /* Легкая анимация для дневного FTD */
+        .daily-update {
+            animation: dailyPulse 0.5s ease;
+        }
+
+        @keyframes dailyPulse {
+            0% { 
+                transform: scale(1);
+            }
+            50% { 
+                transform: scale(1.2);
+                color: #10b981;
+                text-shadow: 0 0 15px rgba(52, 211, 153, 0.8);
+            }
+            100% { 
+                transform: scale(1);
+            }
+        }
+
+        /* Мощная анимация для месячного FTD */
         .ftd-increase {
             animation: ftdSuperPulse 2s ease;
         }
@@ -288,7 +343,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            padding: 5px 10px;
+            padding: 8px 12px;
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.4));
             border-radius: 8px;
             border: 1px solid rgba(96, 165, 250, 0.5);
@@ -297,14 +352,24 @@
             color: #93c5fd;
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
             display: flex;
-            flex-direction: column;
+            gap: 15px;
             align-items: center;
             z-index: 10;
-            line-height: 1.2;
         }
         
-        .team-total-value {
-            font-size: 1.1em;
+        .total-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .total-label {
+            font-size: 0.7em;
+            color: #94a3b8;
+        }
+        
+        .total-value {
+            font-size: 1.2em;
             color: #34d399;
             text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
         }
@@ -500,47 +565,29 @@
             50% { transform: translateY(-10px) rotate(10deg); }
         }
 
-        @keyframes ftdPulse {
-            0% { transform: scale(1); }
-            25% { transform: scale(1.3) rotate(5deg); background: #34d399; }
-            50% { transform: scale(1.5) rotate(-5deg); background: #10b981; }
-            75% { transform: scale(1.3) rotate(5deg); background: #34d399; }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-        
         @keyframes ftdSuperPulse {
             0% { 
                 transform: scale(1) rotate(0deg);
-                background: rgba(59, 130, 246, 0.2);
                 box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
             }
             20% { 
                 transform: scale(1.3) rotate(10deg);
-                background: linear-gradient(135deg, #34d399, #10b981);
-                color: #fff;
                 box-shadow: 0 0 25px rgba(52, 211, 153, 0.8);
             }
             40% { 
                 transform: scale(1.5) rotate(-10deg);
-                background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                color: #000;
                 box-shadow: 0 0 30px rgba(251, 191, 36, 0.9);
             }
             60% { 
                 transform: scale(1.3) rotate(10deg);
-                background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-                color: #fff;
                 box-shadow: 0 0 25px rgba(167, 139, 250, 0.8);
             }
             80% { 
                 transform: scale(1.1) rotate(-5deg);
-                background: linear-gradient(135deg, #60a5fa, #3b82f6);
-                color: #fff;
                 box-shadow: 0 0 20px rgba(96, 165, 250, 0.7);
             }
             100% { 
                 transform: scale(1) rotate(0deg);
-                background: rgba(59, 130, 246, 0.2);
                 box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
             }
         }
@@ -582,9 +629,9 @@
         @media screen and (min-width: 1920px) {
             .header h1 { font-size: 3.5em; }
             .team-column { padding: 15px 20px; }
-            .agent-card { padding: 10px 14px; }
-            .agent-name { font-size: 1em; }
-            .agent-ftd { font-size: 1.2em; }
+            .agent-card { padding: 12px 14px; }
+            .agent-name { font-size: 1.1em; }
+            .ftd-value { font-size: 1.4em; }
         }
 
         /* Scrollbar styling */
@@ -631,16 +678,13 @@
                 max-height: 400px;
             }
             
-            .team-name {
-                font-size: 1.1em;
-            }
-            
-            .agent-name {
-                font-size: 0.9em;
+            .agent-ftd-container {
+                flex-direction: column;
+                gap: 5px;
             }
             
             .agent-ftd {
-                font-size: 1.1em;
+                min-width: 50px;
             }
         }
 
@@ -747,13 +791,17 @@
             const headers = values[0];
             const rows = values.slice(1);
             
+            // Находим индексы колонок
+            // Предполагаем структуру: Team, Stage, FTD (месячный), Daily (дневной)
+            // Если Daily идет перед FTD, измените индексы соответственно
             const teams = {};
             let allAgents = [];
             
             rows.forEach(row => {
                 const team = row[0];
                 const stage = row[1];
-                const ftd = parseInt(row[2]) || 0;
+                const monthlyFTD = parseInt(row[2]) || 0; // FTD - месячный результат
+                const dailyFTD = parseInt(row[3]) || 0;   // Daily - дневной результат
                 
                 if (!teams[team]) {
                     teams[team] = [];
@@ -762,22 +810,22 @@
                 const agent = {
                     team: team,
                     stage: stage,
-                    ftd: ftd
+                    dailyFTD: dailyFTD,
+                    monthlyFTD: monthlyFTD
                 };
                 
                 teams[team].push(agent);
                 allAgents.push(agent);
             });
             
-            // Сортировка агентов в каждой команде по FTD (по убыванию)
+            // Сортировка агентов в каждой команде по месячному FTD (по убыванию)
             Object.keys(teams).forEach(team => {
-                teams[team].sort((a, b) => b.ftd - a.ftd);
+                teams[team].sort((a, b) => b.monthlyFTD - a.monthlyFTD);
             });
             
             // Определение лучших агентов
-            allAgents.sort((a, b) => b.ftd - a.ftd);
-            const bestDay = allAgents[0] || null;
-            const bestMonth = allAgents[0] || null; // В реальном приложении здесь была бы логика для месяца
+            const bestDay = [...allAgents].sort((a, b) => b.dailyFTD - a.dailyFTD)[0] || null;
+            const bestMonth = [...allAgents].sort((a, b) => b.monthlyFTD - a.monthlyFTD)[0] || null;
             
             return {
                 teams: teams,
@@ -792,18 +840,16 @@
             // Обновление лучших агентов
             if (data.bestDay) {
                 document.getElementById('bestDayAgent').textContent = `${data.bestDay.stage} (${data.bestDay.team})`;
-                document.getElementById('bestDayFTD').textContent = `${data.bestDay.ftd}`;
+                document.getElementById('bestDayFTD').textContent = `${data.bestDay.dailyFTD}`;
             }
             
             if (data.bestMonth) {
                 document.getElementById('bestMonthAgent').textContent = `${data.bestMonth.stage} (${data.bestMonth.team})`;
-                document.getElementById('bestMonthFTD').textContent = `${data.bestMonth.ftd}`;
+                document.getElementById('bestMonthFTD').textContent = `${data.bestMonth.monthlyFTD}`;
             }
             
             // Рендеринг команд
             const container = document.getElementById('teamsContainer');
-            
-            // Проверяем, есть ли уже отрендеренные команды
             const existingTeams = container.querySelectorAll('.team-column');
             
             if (existingTeams.length === 0) {
@@ -816,14 +862,13 @@
                     teamIndex++;
                 });
             } else {
-                // Обновление существующих команд без пересоздания
+                // Обновление существующих команд
                 let teamIndex = 0;
                 Object.keys(data.teams).forEach(teamName => {
                     const teamDiv = existingTeams[teamIndex];
                     if (teamDiv) {
                         updateTeamElement(teamDiv, teamName, data.teams[teamName]);
                     } else {
-                        // Если новая команда добавлена
                         const newTeamDiv = createTeamElement(teamName, data.teams[teamName], teamIndex);
                         container.appendChild(newTeamDiv);
                     }
@@ -838,38 +883,15 @@
             updateTime();
         }
         
-        function updateTeamElement(teamDiv, teamName, agents) {
-            // Обновляем только карточки агентов, не трогая структуру
-            const agentCards = teamDiv.querySelectorAll('.agent-card');
-            const totalDiv = teamDiv.querySelector('.team-total');
-            const headerDiv = teamDiv.querySelector('.team-header');
-            
-            // Удаляем старые карточки агентов
-            agentCards.forEach(card => card.remove());
-            
-            // Подсчет общего FTD
-            const totalFTD = agents.reduce((sum, agent) => sum + agent.ftd, 0);
-            
-            // Добавляем новые карточки агентов после header
-            agents.forEach((agent, position) => {
-                const agentCard = createAgentCard(agent, position);
-                teamDiv.appendChild(agentCard);
-            });
-            
-            // Обновляем total
-            if (totalDiv) {
-                totalDiv.querySelector('.team-total-value').textContent = `${totalFTD}`;
-            }
-        }
-        
         function createTeamElement(teamName, agents, index) {
             const teamDiv = document.createElement('div');
             teamDiv.className = 'team-column';
             teamDiv.style.animationDelay = `${index * 0.1}s`;
             
-            // Добавляем Total FTD сверху справа
-            const totalFTD = agents.reduce((sum, agent) => sum + agent.ftd, 0);
-            const totalDiv = createTotalElement(totalFTD);
+            // Подсчет общих FTD
+            const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
+            const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
+            const totalDiv = createTotalElement(totalDaily, totalMonthly);
             teamDiv.appendChild(totalDiv);
             
             const headerDiv = document.createElement('div');
@@ -896,12 +918,43 @@
             return teamDiv;
         }
         
-        function createTotalElement(totalFTD) {
+        function updateTeamElement(teamDiv, teamName, agents) {
+            // Обновляем только карточки агентов
+            const agentCards = teamDiv.querySelectorAll('.agent-card');
+            const totalDiv = teamDiv.querySelector('.team-total');
+            
+            // Удаляем старые карточки агентов
+            agentCards.forEach(card => card.remove());
+            
+            // Подсчет общих FTD
+            const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
+            const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
+            
+            // Добавляем новые карточки агентов
+            agents.forEach((agent, position) => {
+                const agentCard = createAgentCard(agent, position);
+                teamDiv.appendChild(agentCard);
+            });
+            
+            // Обновляем totals
+            if (totalDiv) {
+                totalDiv.querySelector('.daily-total').textContent = `${totalDaily}`;
+                totalDiv.querySelector('.monthly-total').textContent = `${totalMonthly}`;
+            }
+        }
+        
+        function createTotalElement(totalDaily, totalMonthly) {
             const totalDiv = document.createElement('div');
             totalDiv.className = 'team-total';
             totalDiv.innerHTML = `
-                <div style="font-size: 0.8em;">Total</div>
-                <div class="team-total-value">${totalFTD}</div>
+                <div class="total-item">
+                    <div class="total-label">День</div>
+                    <div class="total-value daily-total">${totalDaily}</div>
+                </div>
+                <div class="total-item">
+                    <div class="total-label">Месяц</div>
+                    <div class="total-value monthly-total">${totalMonthly}</div>
+                </div>
             `;
             return totalDiv;
         }
@@ -910,7 +963,7 @@
             const card = document.createElement('div');
             card.className = 'agent-card';
             
-            // Добавление класса для топ-3
+            // Добавление класса для топ-3 (по месячному результату)
             if (position === 0) {
                 card.classList.add('gold');
                 const medal = document.createElement('div');
@@ -938,13 +991,32 @@
             nameDiv.className = 'agent-name';
             nameDiv.textContent = agent.stage;
             
-            const ftdDiv = document.createElement('div');
-            ftdDiv.className = 'agent-ftd';
-            ftdDiv.textContent = `${agent.ftd}`;
-            ftdDiv.id = `ftd-${agent.team}-${agent.stage}`;
+            const ftdContainer = document.createElement('div');
+            ftdContainer.className = 'agent-ftd-container';
+            
+            // Дневной FTD
+            const dailyFtdDiv = document.createElement('div');
+            dailyFtdDiv.className = 'agent-ftd daily';
+            dailyFtdDiv.id = `ftd-daily-${agent.team}-${agent.stage}`;
+            dailyFtdDiv.innerHTML = `
+                <div class="ftd-label">День</div>
+                <div class="ftd-value" id="daily-value-${agent.team}-${agent.stage}">${agent.dailyFTD}</div>
+            `;
+            
+            // Месячный FTD
+            const monthlyFtdDiv = document.createElement('div');
+            monthlyFtdDiv.className = 'agent-ftd monthly';
+            monthlyFtdDiv.id = `ftd-monthly-${agent.team}-${agent.stage}`;
+            monthlyFtdDiv.innerHTML = `
+                <div class="ftd-label">Месяц</div>
+                <div class="ftd-value" id="monthly-value-${agent.team}-${agent.stage}">${agent.monthlyFTD}</div>
+            `;
+            
+            ftdContainer.appendChild(dailyFtdDiv);
+            ftdContainer.appendChild(monthlyFtdDiv);
             
             infoDiv.appendChild(nameDiv);
-            infoDiv.appendChild(ftdDiv);
+            infoDiv.appendChild(ftdContainer);
             card.appendChild(infoDiv);
             
             return card;
@@ -954,18 +1026,40 @@
             Object.keys(teams).forEach(teamName => {
                 teams[teamName].forEach(agent => {
                     const key = `${agent.team}-${agent.stage}`;
-                    if (previousData[key] && previousData[key] < agent.ftd) {
-                        // FTD увеличился
-                        celebrateIncrease(agent);
+                    
+                    // Проверяем дневной FTD - только легкая анимация
+                    const dailyKey = `daily-${key}`;
+                    if (previousData[dailyKey] !== undefined && previousData[dailyKey] < agent.dailyFTD) {
+                        // Только анимация числа для дневного
+                        animateDailyIncrease(agent);
                     }
-                    previousData[key] = agent.ftd;
+                    previousData[dailyKey] = agent.dailyFTD;
+                    
+                    // Проверяем месячный FTD - полная анимация с эффектами
+                    const monthlyKey = `monthly-${key}`;
+                    if (previousData[monthlyKey] !== undefined && previousData[monthlyKey] < agent.monthlyFTD) {
+                        // Полная анимация для месячного
+                        celebrateMonthlyIncrease(agent);
+                    }
+                    previousData[monthlyKey] = agent.monthlyFTD;
                 });
             });
         }
         
-        function celebrateIncrease(agent) {
-            // Анимация элемента FTD
-            const ftdElement = document.getElementById(`ftd-${agent.team}-${agent.stage}`);
+        function animateDailyIncrease(agent) {
+            // Легкая анимация только для числа дневного FTD
+            const dailyValueElement = document.getElementById(`daily-value-${agent.team}-${agent.stage}`);
+            if (dailyValueElement) {
+                dailyValueElement.classList.add('daily-update');
+                setTimeout(() => {
+                    dailyValueElement.classList.remove('daily-update');
+                }, 500);
+            }
+        }
+        
+        function celebrateMonthlyIncrease(agent) {
+            // Анимация элемента месячного FTD
+            const ftdElement = document.getElementById(`ftd-monthly-${agent.team}-${agent.stage}`);
             if (ftdElement) {
                 ftdElement.classList.add('ftd-increase');
                 setTimeout(() => {
@@ -973,10 +1067,10 @@
                 }, 2000);
             }
             
-            // Показ имени агента большими буквами с FTD
-            showAgentAnnouncement(agent.stage, agent.ftd);
+            // Показ имени агента с месячным результатом
+            showAgentAnnouncement(agent.stage, agent.monthlyFTD);
             
-            // Запуск всех эффектов
+            // Запуск всех праздничных эффектов
             createConfetti();
             createMoneyRain();
             createFireworks();
@@ -989,26 +1083,7 @@
         function showAgentAnnouncement(stageName, ftdCount) {
             const announcement = document.createElement('div');
             announcement.className = 'agent-announcement';
-
-            const row = document.createElement('div');
-            row.className = 'agent-announcement-row';
-
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'agent-announcement-name';
-            nameSpan.textContent = stageName.toUpperCase();
-
-            const colonSpan = document.createElement('span');
-            colonSpan.className = 'agent-announcement-colon';
-            colonSpan.textContent = ':';
-
-            const ftdSpan = document.createElement('span');
-            ftdSpan.className = 'agent-announcement-ftd';
-            ftdSpan.textContent = ftdCount;
-
-            row.appendChild(nameSpan);
-            row.appendChild(colonSpan);
-            row.appendChild(ftdSpan);
-            announcement.appendChild(row);
+            announcement.textContent = `${stageName.toUpperCase()}: ${ftdCount}`;
             document.body.appendChild(announcement);
 
             setTimeout(() => {
