@@ -39,32 +39,29 @@
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
             animation: fadeInDown 1s ease;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .header h1 {
             font-size: 3em;
-            margin-bottom: 10px;
             text-shadow: 0 0 20px rgba(147, 197, 253, 0.5);
             background: linear-gradient(90deg, #60a5fa, #93c5fd, #60a5fa);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shine 3s linear infinite;
+            flex: 0 1 auto;
+            text-align: center;
         }
 
         @keyframes shine {
             to { background-position: 200% center; }
-        }
-
-        .best-agents {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
         }
 
         .best-agent-card {
@@ -77,6 +74,7 @@
             animation: fadeIn 1s ease;
             border: 1px solid rgba(99, 102, 241, 0.3);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(59, 130, 246, 0.1);
+            flex: 0 0 auto;
         }
 
         .best-agent-card h3 {
@@ -315,7 +313,6 @@
             color: #34d399;
         }
 
-        /* Легкая анимация для дневного FTD */
         .daily-update {
             animation: dailyPulse 0.5s ease;
         }
@@ -334,7 +331,6 @@
             }
         }
 
-        /* Мощная анимация для месячного FTD */
         .ftd-increase {
             animation: ftdSuperPulse 2s ease;
         }
@@ -625,7 +621,6 @@
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
         }
 
-        /* Адаптация для Android TV */
         @media screen and (min-width: 1920px) {
             .header h1 { font-size: 3.5em; }
             .team-column { padding: 15px 20px; }
@@ -634,7 +629,6 @@
             .ftd-value { font-size: 1.4em; }
         }
 
-        /* Scrollbar styling */
         ::-webkit-scrollbar {
             height: 10px;
             width: 8px;
@@ -666,8 +660,36 @@
             background: rgba(99, 102, 241, 0.5);
         }
 
-        /* Для узких экранов */
+        @media screen and (max-width: 1200px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header h1 {
+                order: 1;
+                font-size: 2.5em;
+            }
+            
+            .best-agent-card:first-of-type {
+                order: 2;
+            }
+            
+            .best-agent-card:last-of-type {
+                order: 3;
+            }
+        }
+
         @media screen and (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .best-agent-card {
+                min-width: 180px;
+                padding: 8px 15px;
+            }
+            
             .teams-container {
                 flex-direction: column;
                 gap: 10px;
@@ -688,7 +710,6 @@
             }
         }
 
-        /* Адаптация для широких экранов */
         @media screen and (min-width: 1200px) {
             .teams-container {
                 gap: 20px;
@@ -703,15 +724,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏆 Sales Leaderboard 🏆</h1>
-        </div>
-
-        <div class="best-agents">
             <div class="best-agent-card">
                 <h3>🌟 Лучший агент дня</h3>
                 <div class="agent-name" id="bestDayAgent">-</div>
                 <div class="ftd-count" id="bestDayFTD">0</div>
             </div>
+            
+            <h1>🏆 Sales Leaderboard 🏆</h1>
+            
             <div class="best-agent-card">
                 <h3>🏅 Лучший агент месяца</h3>
                 <div class="agent-name" id="bestMonthAgent">-</div>
@@ -745,7 +765,6 @@
         let teamIcons = ['👥', '🚀', '💼', '🎯', '⚡', '🔥', '💡', '🌟', '🏅', '💪'];
         let soundEnabled = false;
         
-        // Инициализация управления звуком
         document.getElementById('soundControl').addEventListener('click', function() {
             soundEnabled = !soundEnabled;
             const soundControl = document.getElementById('soundControl');
@@ -754,7 +773,6 @@
             if (soundEnabled) {
                 soundControl.classList.remove('muted');
                 soundControl.textContent = '🔊';
-                // Проигрываем тестовый звук для активации
                 audio.volume = 0.1;
                 audio.play().then(() => {
                     audio.pause();
@@ -791,17 +809,14 @@
             const headers = values[0];
             const rows = values.slice(1);
             
-            // Находим индексы колонок
-            // Предполагаем структуру: Team, Stage, FTD (месячный), Daily (дневной)
-            // Если Daily идет перед FTD, измените индексы соответственно
             const teams = {};
             let allAgents = [];
             
             rows.forEach(row => {
                 const team = row[0];
                 const stage = row[1];
-                const monthlyFTD = parseInt(row[2]) || 0; // FTD - месячный результат
-                const dailyFTD = parseInt(row[3]) || 0;   // Daily - дневной результат
+                const monthlyFTD = parseInt(row[2]) || 0;
+                const dailyFTD = parseInt(row[3]) || 0;
                 
                 if (!teams[team]) {
                     teams[team] = [];
@@ -818,12 +833,10 @@
                 allAgents.push(agent);
             });
             
-            // Сортировка агентов в каждой команде по месячному FTD (по убыванию)
             Object.keys(teams).forEach(team => {
                 teams[team].sort((a, b) => b.monthlyFTD - a.monthlyFTD);
             });
             
-            // Определение лучших агентов
             const bestDay = [...allAgents].sort((a, b) => b.dailyFTD - a.dailyFTD)[0] || null;
             const bestMonth = [...allAgents].sort((a, b) => b.monthlyFTD - a.monthlyFTD)[0] || null;
             
@@ -837,7 +850,6 @@
         function renderData(data) {
             if (!data) return;
             
-            // Обновление лучших агентов
             if (data.bestDay) {
                 document.getElementById('bestDayAgent').textContent = `${data.bestDay.stage} (${data.bestDay.team})`;
                 document.getElementById('bestDayFTD').textContent = `${data.bestDay.dailyFTD}`;
@@ -848,12 +860,10 @@
                 document.getElementById('bestMonthFTD').textContent = `${data.bestMonth.monthlyFTD}`;
             }
             
-            // Рендеринг команд
             const container = document.getElementById('teamsContainer');
             const existingTeams = container.querySelectorAll('.team-column');
             
             if (existingTeams.length === 0) {
-                // Первый рендеринг
                 container.innerHTML = '';
                 let teamIndex = 0;
                 Object.keys(data.teams).forEach(teamName => {
@@ -862,7 +872,6 @@
                     teamIndex++;
                 });
             } else {
-                // Обновление существующих команд
                 let teamIndex = 0;
                 Object.keys(data.teams).forEach(teamName => {
                     const teamDiv = existingTeams[teamIndex];
@@ -876,10 +885,7 @@
                 });
             }
             
-            // Проверка на увеличение FTD
             checkForIncreases(data.teams);
-            
-            // Обновление времени
             updateTime();
         }
         
@@ -888,7 +894,6 @@
             teamDiv.className = 'team-column';
             teamDiv.style.animationDelay = `${index * 0.1}s`;
             
-            // Подсчет общих FTD
             const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
             const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
             const totalDiv = createTotalElement(totalDaily, totalMonthly);
@@ -909,7 +914,6 @@
             headerDiv.appendChild(nameDiv);
             teamDiv.appendChild(headerDiv);
             
-            // Все агенты команды
             agents.forEach((agent, position) => {
                 const agentCard = createAgentCard(agent, position);
                 teamDiv.appendChild(agentCard);
@@ -919,24 +923,19 @@
         }
         
         function updateTeamElement(teamDiv, teamName, agents) {
-            // Обновляем только карточки агентов
             const agentCards = teamDiv.querySelectorAll('.agent-card');
             const totalDiv = teamDiv.querySelector('.team-total');
             
-            // Удаляем старые карточки агентов
             agentCards.forEach(card => card.remove());
             
-            // Подсчет общих FTD
             const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
             const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
             
-            // Добавляем новые карточки агентов
             agents.forEach((agent, position) => {
                 const agentCard = createAgentCard(agent, position);
                 teamDiv.appendChild(agentCard);
             });
             
-            // Обновляем totals
             if (totalDiv) {
                 totalDiv.querySelector('.daily-total').textContent = `${totalDaily}`;
                 totalDiv.querySelector('.monthly-total').textContent = `${totalMonthly}`;
@@ -963,7 +962,6 @@
             const card = document.createElement('div');
             card.className = 'agent-card';
             
-            // Добавление класса для топ-3 (по месячному результату)
             if (position === 0) {
                 card.classList.add('gold');
                 const medal = document.createElement('div');
@@ -994,7 +992,6 @@
             const ftdContainer = document.createElement('div');
             ftdContainer.className = 'agent-ftd-container';
             
-            // Дневной FTD
             const dailyFtdDiv = document.createElement('div');
             dailyFtdDiv.className = 'agent-ftd daily';
             dailyFtdDiv.id = `ftd-daily-${agent.team}-${agent.stage}`;
@@ -1003,7 +1000,6 @@
                 <div class="ftd-value" id="daily-value-${agent.team}-${agent.stage}">${agent.dailyFTD}</div>
             `;
             
-            // Месячный FTD
             const monthlyFtdDiv = document.createElement('div');
             monthlyFtdDiv.className = 'agent-ftd monthly';
             monthlyFtdDiv.id = `ftd-monthly-${agent.team}-${agent.stage}`;
@@ -1027,18 +1023,14 @@
                 teams[teamName].forEach(agent => {
                     const key = `${agent.team}-${agent.stage}`;
                     
-                    // Проверяем дневной FTD - только легкая анимация
                     const dailyKey = `daily-${key}`;
                     if (previousData[dailyKey] !== undefined && previousData[dailyKey] < agent.dailyFTD) {
-                        // Только анимация числа для дневного
                         animateDailyIncrease(agent);
                     }
                     previousData[dailyKey] = agent.dailyFTD;
                     
-                    // Проверяем месячный FTD - полная анимация с эффектами
                     const monthlyKey = `monthly-${key}`;
                     if (previousData[monthlyKey] !== undefined && previousData[monthlyKey] < agent.monthlyFTD) {
-                        // Полная анимация для месячного
                         celebrateMonthlyIncrease(agent);
                     }
                     previousData[monthlyKey] = agent.monthlyFTD;
@@ -1047,7 +1039,6 @@
         }
         
         function animateDailyIncrease(agent) {
-            // Легкая анимация только для числа дневного FTD
             const dailyValueElement = document.getElementById(`daily-value-${agent.team}-${agent.stage}`);
             if (dailyValueElement) {
                 dailyValueElement.classList.add('daily-update');
@@ -1058,7 +1049,6 @@
         }
         
         function celebrateMonthlyIncrease(agent) {
-            // Анимация элемента месячного FTD
             const ftdElement = document.getElementById(`ftd-monthly-${agent.team}-${agent.stage}`);
             if (ftdElement) {
                 ftdElement.classList.add('ftd-increase');
@@ -1067,16 +1057,11 @@
                 }, 2000);
             }
             
-            // Показ имени агента с месячным результатом
             showAgentAnnouncement(agent.stage, agent.monthlyFTD);
-            
-            // Запуск всех праздничных эффектов
             createConfetti();
             createMoneyRain();
             createFireworks();
             showCelebration();
-            
-            // Воспроизведение звука
             playAchievementSound();
         }
         
@@ -1194,7 +1179,7 @@
             
             const audio = document.getElementById('achievementSound');
             if (audio) {
-                audio.currentTime = 0; // Сброс на начало
+                audio.currentTime = 0;
                 audio.play().catch(e => console.log('Не удалось воспроизвести звук:', e));
             }
         }
@@ -1217,7 +1202,6 @@
             }
         }
         
-        // Автообновление каждые 5 секунд
         async function autoUpdate() {
             const data = await fetchData();
             if (data) {
@@ -1225,10 +1209,7 @@
             }
         }
         
-        // Инициализация
         init();
-        
-        // Запуск автообновления каждые 5 секунд
         setInterval(autoUpdate, 5000);
     </script>
 </body>
