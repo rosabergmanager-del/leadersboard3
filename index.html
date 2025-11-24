@@ -757,460 +757,621 @@
     </audio>
 
     <script>
-        const SHEET_ID = '1mErOW57MrU_fhQnRsI1ZSldw7dpd7lrl4yu7EgMpx1o';
-        const API_KEY = 'AIzaSyCFS9Tse6vuK2O3PK4PyS0DDgRIzbC1F2E';
-        const SHEET_NAME = 'Sheet5';
+    const SHEET_ID = '1mErOW57MrU_fhQnRsI1ZSldw7dpd7lrl4yu7EgMpx1o';
+    const API_KEY = 'AIzaSyCFS9Tse6vuK2O3PK4PyS0DDgRIzbC1F2E';
+    const SHEET_NAME = 'Sheet5';
+    
+    let previousData = {};
+    let cachedData = null; // Кэш последних успешно загруженных данных
+    let teamIcons = ['👥', '🚀', '💼', '🎯', '⚡', '🔥', '💡', '🌟', '🏅', '💪'];
+    let soundEnabled = false;
+    let consecutiveErrors = 0;
+    let isOnline = true;
+    const MAX_RETRIES = 3;
+    const UPDATE_INTERVAL = 30000; // 30 секунд вместо 5
+    
+    // Создаем индикатор подключения
+    function createConnectionIndicator() {
+    const indicator = document.createElement('div');
+    indicator.id = 'connectionStatus';
+    indicator.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    `;
+    document.body.appendChild(indicator);
+    updateConnectionStatus(true);
+}
+    
+    function updateConnectionStatus(online, lastUpdate = null) {
+        const indicator = document.getElementById('connectionStatus');
+        if (!indicator) return;
         
-        let previousData = {};
-        let teamIcons = ['👥', '🚀', '💼', '🎯', '⚡', '🔥', '💡', '🌟', '🏅', '💪'];
-        let soundEnabled = false;
+        isOnline = online;
         
-        document.getElementById('soundControl').addEventListener('click', function() {
-            soundEnabled = !soundEnabled;
-            const soundControl = document.getElementById('soundControl');
-            const audio = document.getElementById('achievementSound');
-            
-            if (soundEnabled) {
-                soundControl.classList.remove('muted');
-                soundControl.textContent = '🔊';
-                audio.volume = 0.1;
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                    audio.volume = 1;
-                }).catch(e => console.log('Ошибка инициализации звука:', e));
-            } else {
-                soundControl.classList.add('muted');
-                soundControl.textContent = '🔇';
+        if (online) {
+            indicator.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9))';
+            indicator.style.border = '1px solid rgba(52, 211, 153, 0.5)';
+            indicator.innerHTML = '🟢 Онлайн';
+        } else {
+            indicator.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9))';
+            indicator.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+            const lastUpdateText = lastUpdate ? ` (данные от ${lastUpdate})` : '';
+            indicator.innerHTML = `🔴 Оффлайн${lastUpdateText}`;
+        }
+    }
+    
+    // Сохранение данных в localStorage для персистентности
+    function saveToLocalStorage(data) {
+        try {
+            localStorage.setItem('leaderboardCache', JSON.stringify({
+                data: data,
+                timestamp: new Date().toISOString()
+            }));
+        } catch (e) {
+            console.log('Не удалось сохранить в localStorage:', e);
+        }
+    }
+    
+    // Загрузка данных из localStorage
+    function loadFromLocalStorage() {
+        try {
+            const cached = localStorage.getItem('leaderboardCache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                return parsed;
             }
+        } catch (e) {
+            console.log('Не удалось загрузить из localStorage:', e);
+        }
+        return null;
+    }
+    
+    document.getElementById('soundControl').addEventListener('click', function() {
+        soundEnabled = !soundEnabled;
+        const soundControl = document.getElementById('soundControl');
+        const audio = document.getElementById('achievementSound');
+        
+        if (soundEnabled) {
+            soundControl.classList.remove('muted');
+            soundControl.textContent = '🔊';
+            audio.volume = 0.1;
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = 1;
+            }).catch(e => console.log('Ошибка инициализации звука:', e));
+        } else {
+            soundControl.classList.add('muted');
+            soundControl.textContent = '🔇';
+        }
+    });
+    
+    async function fetchData(retryCount = 0) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+            
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+            const response = await fetch(url, { signal: controller.signal });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const processedData = processData(data.values);
+            
+            if (processedData) {
+                // Успешная загрузка
+                cachedData = processedData;
+                saveToLocalStorage(processedData);
+                consecutiveErrors = 0;
+                updateConnectionStatus(true);
+                return processedData;
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Ошибка при загрузке данных:', error);
+            consecutiveErrors++;
+            
+            // Попытка повторной загрузки
+            if (retryCount < MAX_RETRIES) {
+                console.log(`Повторная попытка ${retryCount + 1}/${MAX_RETRIES}...`);
+                await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1))); // Экспоненциальная задержка
+                return fetchData(retryCount + 1);
+            }
+            
+            // Используем кэшированные данные
+            if (cachedData) {
+                console.log('Используем кэшированные данные');
+                const cached = loadFromLocalStorage();
+                if (cached) {
+                    const cacheTime = new Date(cached.timestamp).toLocaleTimeString('ru-RU');
+                    updateConnectionStatus(false, cacheTime);
+                } else {
+                    updateConnectionStatus(false);
+                }
+                return cachedData;
+            }
+            
+            // Пытаемся загрузить из localStorage
+            const localData = loadFromLocalStorage();
+            if (localData) {
+                console.log('Загрузка из localStorage');
+                cachedData = localData.data;
+                const cacheTime = new Date(localData.timestamp).toLocaleTimeString('ru-RU');
+                updateConnectionStatus(false, cacheTime);
+                return cachedData;
+            }
+            
+            updateConnectionStatus(false);
+            return null;
+        }
+    }
+    
+    function processData(values) {
+        if (!values || values.length < 2) return null;
+        
+        const headers = values[0];
+        const rows = values.slice(1);
+        
+        const teams = {};
+        let allAgents = [];
+        
+        rows.forEach(row => {
+            const team = row[0];
+            const stage = row[1];
+            const monthlyFTD = parseInt(row[2]) || 0;
+            const dailyFTD = parseInt(row[3]) || 0;
+            
+            if (!teams[team]) {
+                teams[team] = [];
+            }
+            
+            const agent = {
+                team: team,
+                stage: stage,
+                dailyFTD: dailyFTD,
+                monthlyFTD: monthlyFTD
+            };
+            
+            teams[team].push(agent);
+            allAgents.push(agent);
         });
         
-        async function fetchData() {
-            try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error('Ошибка при получении данных');
+        Object.keys(teams).forEach(team => {
+            teams[team].sort((a, b) => b.monthlyFTD - a.monthlyFTD);
+        });
+        
+        const bestDay = [...allAgents].sort((a, b) => b.dailyFTD - a.dailyFTD)[0] || null;
+        const bestMonth = [...allAgents].sort((a, b) => b.monthlyFTD - a.monthlyFTD)[0] || null;
+        
+        return {
+            teams: teams,
+            bestDay: bestDay,
+            bestMonth: bestMonth
+        };
+    }
+    
+    function renderData(data) {
+        if (!data) {
+            // Не показываем ошибку, если есть кэшированные данные
+            if (!cachedData) {
+                showError('Нет доступных данных. Ожидание подключения...');
+            }
+            return;
+        }
+        
+        // Убираем сообщение об ошибке, если оно было
+        const errorDiv = document.querySelector('.error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+        
+        if (data.bestDay) {
+            document.getElementById('bestDayAgent').textContent = `${data.bestDay.stage} (${data.bestDay.team})`;
+            document.getElementById('bestDayFTD').textContent = `${data.bestDay.dailyFTD}`;
+        }
+        
+        if (data.bestMonth) {
+            document.getElementById('bestMonthAgent').textContent = `${data.bestMonth.stage} (${data.bestMonth.team})`;
+            document.getElementById('bestMonthFTD').textContent = `${data.bestMonth.monthlyFTD}`;
+        }
+        
+        const container = document.getElementById('teamsContainer');
+        const existingTeams = container.querySelectorAll('.team-column');
+        
+        if (existingTeams.length === 0) {
+            container.innerHTML = '';
+            let teamIndex = 0;
+            Object.keys(data.teams).forEach(teamName => {
+                const teamDiv = createTeamElement(teamName, data.teams[teamName], teamIndex);
+                container.appendChild(teamDiv);
+                teamIndex++;
+            });
+        } else {
+            let teamIndex = 0;
+            Object.keys(data.teams).forEach(teamName => {
+                const teamDiv = existingTeams[teamIndex];
+                if (teamDiv) {
+                    updateTeamElement(teamDiv, teamName, data.teams[teamName]);
+                } else {
+                    const newTeamDiv = createTeamElement(teamName, data.teams[teamName], teamIndex);
+                    container.appendChild(newTeamDiv);
                 }
-                
-                const data = await response.json();
-                return processData(data.values);
-            } catch (error) {
-                console.error('Ошибка:', error);
-                showError('Не удалось загрузить данные. Проверьте подключение к интернету.');
-                return null;
-            }
+                teamIndex++;
+            });
         }
         
-        function processData(values) {
-            if (!values || values.length < 2) return null;
-            
-            const headers = values[0];
-            const rows = values.slice(1);
-            
-            const teams = {};
-            let allAgents = [];
-            
-            rows.forEach(row => {
-                const team = row[0];
-                const stage = row[1];
-                const monthlyFTD = parseInt(row[2]) || 0;
-                const dailyFTD = parseInt(row[3]) || 0;
+        checkForIncreases(data.teams);
+        updateTime();
+    }
+    
+    function createTeamElement(teamName, agents, index) {
+        const teamDiv = document.createElement('div');
+        teamDiv.className = 'team-column';
+        teamDiv.style.animationDelay = `${index * 0.1}s`;
+        
+        const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
+        const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
+        const totalDiv = createTotalElement(totalDaily, totalMonthly);
+        teamDiv.appendChild(totalDiv);
+        
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'team-header';
+        
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'team-icon';
+        iconDiv.textContent = teamIcons[index % teamIcons.length];
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'team-name';
+        nameDiv.textContent = teamName;
+        
+        headerDiv.appendChild(iconDiv);
+        headerDiv.appendChild(nameDiv);
+        teamDiv.appendChild(headerDiv);
+        
+        agents.forEach((agent, position) => {
+            const agentCard = createAgentCard(agent, position);
+            teamDiv.appendChild(agentCard);
+        });
+        
+        return teamDiv;
+    }
+    
+    function updateTeamElement(teamDiv, teamName, agents) {
+        const agentCards = teamDiv.querySelectorAll('.agent-card');
+        const totalDiv = teamDiv.querySelector('.team-total');
+        
+        agentCards.forEach(card => card.remove());
+        
+        const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
+        const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
+        
+        agents.forEach((agent, position) => {
+            const agentCard = createAgentCard(agent, position);
+            teamDiv.appendChild(agentCard);
+        });
+        
+        if (totalDiv) {
+            totalDiv.querySelector('.daily-total').textContent = `${totalDaily}`;
+            totalDiv.querySelector('.monthly-total').textContent = `${totalMonthly}`;
+        }
+    }
+    
+    function createTotalElement(totalDaily, totalMonthly) {
+        const totalDiv = document.createElement('div');
+        totalDiv.className = 'team-total';
+        totalDiv.innerHTML = `
+            <div class="total-item">
+                <div class="total-label">День</div>
+                <div class="total-value daily-total">${totalDaily}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Месяц</div>
+                <div class="total-value monthly-total">${totalMonthly}</div>
+            </div>
+        `;
+        return totalDiv;
+    }
+    
+    function createAgentCard(agent, position) {
+        const card = document.createElement('div');
+        card.className = 'agent-card';
+        
+        if (position === 0) {
+            card.classList.add('gold');
+            const medal = document.createElement('div');
+            medal.className = 'medal';
+            medal.textContent = '👑';
+            card.appendChild(medal);
+        } else if (position === 1) {
+            card.classList.add('silver');
+            const medal = document.createElement('div');
+            medal.className = 'medal';
+            medal.textContent = '🥈';
+            card.appendChild(medal);
+        } else if (position === 2) {
+            card.classList.add('bronze');
+            const medal = document.createElement('div');
+            medal.className = 'medal';
+            medal.textContent = '🥉';
+            card.appendChild(medal);
+        }
+        
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'agent-info';
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'agent-name';
+        nameDiv.textContent = agent.stage;
+        
+        const ftdContainer = document.createElement('div');
+        ftdContainer.className = 'agent-ftd-container';
+        
+        const dailyFtdDiv = document.createElement('div');
+        dailyFtdDiv.className = 'agent-ftd daily';
+        dailyFtdDiv.id = `ftd-daily-${agent.team}-${agent.stage}`;
+        dailyFtdDiv.innerHTML = `
+            <div class="ftd-label">День</div>
+            <div class="ftd-value" id="daily-value-${agent.team}-${agent.stage}">${agent.dailyFTD}</div>
+        `;
+        
+        const monthlyFtdDiv = document.createElement('div');
+        monthlyFtdDiv.className = 'agent-ftd monthly';
+        monthlyFtdDiv.id = `ftd-monthly-${agent.team}-${agent.stage}`;
+        monthlyFtdDiv.innerHTML = `
+            <div class="ftd-label">Месяц</div>
+            <div class="ftd-value" id="monthly-value-${agent.team}-${agent.stage}">${agent.monthlyFTD}</div>
+        `;
+        
+        ftdContainer.appendChild(dailyFtdDiv);
+        ftdContainer.appendChild(monthlyFtdDiv);
+        
+        infoDiv.appendChild(nameDiv);
+        infoDiv.appendChild(ftdContainer);
+        card.appendChild(infoDiv);
+        
+        return card;
+    }
+    
+    function checkForIncreases(teams) {
+        Object.keys(teams).forEach(teamName => {
+            teams[teamName].forEach(agent => {
+                const key = `${agent.team}-${agent.stage}`;
                 
-                if (!teams[team]) {
-                    teams[team] = [];
+                const dailyKey = `daily-${key}`;
+                if (previousData[dailyKey] !== undefined && previousData[dailyKey] < agent.dailyFTD) {
+                    animateDailyIncrease(agent);
                 }
+                previousData[dailyKey] = agent.dailyFTD;
                 
-                const agent = {
-                    team: team,
-                    stage: stage,
-                    dailyFTD: dailyFTD,
-                    monthlyFTD: monthlyFTD
-                };
-                
-                teams[team].push(agent);
-                allAgents.push(agent);
+                const monthlyKey = `monthly-${key}`;
+                if (previousData[monthlyKey] !== undefined && previousData[monthlyKey] < agent.monthlyFTD) {
+                    celebrateMonthlyIncrease(agent);
+                }
+                previousData[monthlyKey] = agent.monthlyFTD;
             });
-            
-            Object.keys(teams).forEach(team => {
-                teams[team].sort((a, b) => b.monthlyFTD - a.monthlyFTD);
-            });
-            
-            const bestDay = [...allAgents].sort((a, b) => b.dailyFTD - a.dailyFTD)[0] || null;
-            const bestMonth = [...allAgents].sort((a, b) => b.monthlyFTD - a.monthlyFTD)[0] || null;
-            
-            return {
-                teams: teams,
-                bestDay: bestDay,
-                bestMonth: bestMonth
-            };
-        }
-        
-        function renderData(data) {
-            if (!data) return;
-            
-            if (data.bestDay) {
-                document.getElementById('bestDayAgent').textContent = `${data.bestDay.stage} (${data.bestDay.team})`;
-                document.getElementById('bestDayFTD').textContent = `${data.bestDay.dailyFTD}`;
-            }
-            
-            if (data.bestMonth) {
-                document.getElementById('bestMonthAgent').textContent = `${data.bestMonth.stage} (${data.bestMonth.team})`;
-                document.getElementById('bestMonthFTD').textContent = `${data.bestMonth.monthlyFTD}`;
-            }
-            
-            const container = document.getElementById('teamsContainer');
-            const existingTeams = container.querySelectorAll('.team-column');
-            
-            if (existingTeams.length === 0) {
-                container.innerHTML = '';
-                let teamIndex = 0;
-                Object.keys(data.teams).forEach(teamName => {
-                    const teamDiv = createTeamElement(teamName, data.teams[teamName], teamIndex);
-                    container.appendChild(teamDiv);
-                    teamIndex++;
-                });
-            } else {
-                let teamIndex = 0;
-                Object.keys(data.teams).forEach(teamName => {
-                    const teamDiv = existingTeams[teamIndex];
-                    if (teamDiv) {
-                        updateTeamElement(teamDiv, teamName, data.teams[teamName]);
-                    } else {
-                        const newTeamDiv = createTeamElement(teamName, data.teams[teamName], teamIndex);
-                        container.appendChild(newTeamDiv);
-                    }
-                    teamIndex++;
-                });
-            }
-            
-            checkForIncreases(data.teams);
-            updateTime();
-        }
-        
-        function createTeamElement(teamName, agents, index) {
-            const teamDiv = document.createElement('div');
-            teamDiv.className = 'team-column';
-            teamDiv.style.animationDelay = `${index * 0.1}s`;
-            
-            const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
-            const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
-            const totalDiv = createTotalElement(totalDaily, totalMonthly);
-            teamDiv.appendChild(totalDiv);
-            
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'team-header';
-            
-            const iconDiv = document.createElement('div');
-            iconDiv.className = 'team-icon';
-            iconDiv.textContent = teamIcons[index % teamIcons.length];
-            
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'team-name';
-            nameDiv.textContent = teamName;
-            
-            headerDiv.appendChild(iconDiv);
-            headerDiv.appendChild(nameDiv);
-            teamDiv.appendChild(headerDiv);
-            
-            agents.forEach((agent, position) => {
-                const agentCard = createAgentCard(agent, position);
-                teamDiv.appendChild(agentCard);
-            });
-            
-            return teamDiv;
-        }
-        
-        function updateTeamElement(teamDiv, teamName, agents) {
-            const agentCards = teamDiv.querySelectorAll('.agent-card');
-            const totalDiv = teamDiv.querySelector('.team-total');
-            
-            agentCards.forEach(card => card.remove());
-            
-            const totalDaily = agents.reduce((sum, agent) => sum + agent.dailyFTD, 0);
-            const totalMonthly = agents.reduce((sum, agent) => sum + agent.monthlyFTD, 0);
-            
-            agents.forEach((agent, position) => {
-                const agentCard = createAgentCard(agent, position);
-                teamDiv.appendChild(agentCard);
-            });
-            
-            if (totalDiv) {
-                totalDiv.querySelector('.daily-total').textContent = `${totalDaily}`;
-                totalDiv.querySelector('.monthly-total').textContent = `${totalMonthly}`;
-            }
-        }
-        
-        function createTotalElement(totalDaily, totalMonthly) {
-            const totalDiv = document.createElement('div');
-            totalDiv.className = 'team-total';
-            totalDiv.innerHTML = `
-                <div class="total-item">
-                    <div class="total-label">День</div>
-                    <div class="total-value daily-total">${totalDaily}</div>
-                </div>
-                <div class="total-item">
-                    <div class="total-label">Месяц</div>
-                    <div class="total-value monthly-total">${totalMonthly}</div>
-                </div>
-            `;
-            return totalDiv;
-        }
-        
-        function createAgentCard(agent, position) {
-            const card = document.createElement('div');
-            card.className = 'agent-card';
-            
-            if (position === 0) {
-                card.classList.add('gold');
-                const medal = document.createElement('div');
-                medal.className = 'medal';
-                medal.textContent = '👑';
-                card.appendChild(medal);
-            } else if (position === 1) {
-                card.classList.add('silver');
-                const medal = document.createElement('div');
-                medal.className = 'medal';
-                medal.textContent = '🥈';
-                card.appendChild(medal);
-            } else if (position === 2) {
-                card.classList.add('bronze');
-                const medal = document.createElement('div');
-                medal.className = 'medal';
-                medal.textContent = '🥉';
-                card.appendChild(medal);
-            }
-            
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'agent-info';
-            
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'agent-name';
-            nameDiv.textContent = agent.stage;
-            
-            const ftdContainer = document.createElement('div');
-            ftdContainer.className = 'agent-ftd-container';
-            
-            const dailyFtdDiv = document.createElement('div');
-            dailyFtdDiv.className = 'agent-ftd daily';
-            dailyFtdDiv.id = `ftd-daily-${agent.team}-${agent.stage}`;
-            dailyFtdDiv.innerHTML = `
-                <div class="ftd-label">День</div>
-                <div class="ftd-value" id="daily-value-${agent.team}-${agent.stage}">${agent.dailyFTD}</div>
-            `;
-            
-            const monthlyFtdDiv = document.createElement('div');
-            monthlyFtdDiv.className = 'agent-ftd monthly';
-            monthlyFtdDiv.id = `ftd-monthly-${agent.team}-${agent.stage}`;
-            monthlyFtdDiv.innerHTML = `
-                <div class="ftd-label">Месяц</div>
-                <div class="ftd-value" id="monthly-value-${agent.team}-${agent.stage}">${agent.monthlyFTD}</div>
-            `;
-            
-            ftdContainer.appendChild(dailyFtdDiv);
-            ftdContainer.appendChild(monthlyFtdDiv);
-            
-            infoDiv.appendChild(nameDiv);
-            infoDiv.appendChild(ftdContainer);
-            card.appendChild(infoDiv);
-            
-            return card;
-        }
-        
-        function checkForIncreases(teams) {
-            Object.keys(teams).forEach(teamName => {
-                teams[teamName].forEach(agent => {
-                    const key = `${agent.team}-${agent.stage}`;
-                    
-                    const dailyKey = `daily-${key}`;
-                    if (previousData[dailyKey] !== undefined && previousData[dailyKey] < agent.dailyFTD) {
-                        animateDailyIncrease(agent);
-                    }
-                    previousData[dailyKey] = agent.dailyFTD;
-                    
-                    const monthlyKey = `monthly-${key}`;
-                    if (previousData[monthlyKey] !== undefined && previousData[monthlyKey] < agent.monthlyFTD) {
-                        celebrateMonthlyIncrease(agent);
-                    }
-                    previousData[monthlyKey] = agent.monthlyFTD;
-                });
-            });
-        }
-        
-        function animateDailyIncrease(agent) {
-            const dailyValueElement = document.getElementById(`daily-value-${agent.team}-${agent.stage}`);
-            if (dailyValueElement) {
-                dailyValueElement.classList.add('daily-update');
-                setTimeout(() => {
-                    dailyValueElement.classList.remove('daily-update');
-                }, 500);
-            }
-        }
-        
-        function celebrateMonthlyIncrease(agent) {
-            const ftdElement = document.getElementById(`ftd-monthly-${agent.team}-${agent.stage}`);
-            if (ftdElement) {
-                ftdElement.classList.add('ftd-increase');
-                setTimeout(() => {
-                    ftdElement.classList.remove('ftd-increase');
-                }, 2000);
-            }
-            
-            showAgentAnnouncement(agent.stage, agent.monthlyFTD);
-            createConfetti();
-            createMoneyRain();
-            createFireworks();
-            showCelebration();
-            playAchievementSound();
-        }
-        
-        function showAgentAnnouncement(stageName, ftdCount) {
-            const announcement = document.createElement('div');
-            announcement.className = 'agent-announcement';
-            announcement.textContent = `${stageName.toUpperCase()}: ${ftdCount}`;
-            document.body.appendChild(announcement);
-
+        });
+    }
+    
+    function animateDailyIncrease(agent) {
+        const dailyValueElement = document.getElementById(`daily-value-${agent.team}-${agent.stage}`);
+        if (dailyValueElement) {
+            dailyValueElement.classList.add('daily-update');
             setTimeout(() => {
-                announcement.remove();
-            }, 3000);
+                dailyValueElement.classList.remove('daily-update');
+            }, 500);
         }
-        
-        function createConfetti() {
-            const colors = ['#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#f87171'];
-            
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.top = '-10px';
-                    
-                    const piece = document.createElement('div');
-                    piece.className = 'confetti-piece';
-                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                    piece.style.animationDelay = Math.random() * 0.5 + 's';
-                    
-                    confetti.appendChild(piece);
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), 4000);
-                }, i * 30);
-            }
-        }
-        
-        function createMoneyRain() {
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const money = document.createElement('div');
-                    money.className = 'money';
-                    money.textContent = '$100';
-                    money.style.left = Math.random() * 100 + '%';
-                    money.style.top = '-50px';
-                    money.style.animationDelay = Math.random() * 0.5 + 's';
-                    money.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                    
-                    document.body.appendChild(money);
-                    
-                    setTimeout(() => money.remove(), 5000);
-                }, i * 100);
-            }
-        }
-        
-        function createFireworks() {
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const x = Math.random() * window.innerWidth;
-                    const y = Math.random() * window.innerHeight / 2;
-                    
-                    const firework = document.createElement('div');
-                    firework.className = 'firework';
-                    firework.style.left = x + 'px';
-                    firework.style.bottom = '0';
-                    
-                    document.body.appendChild(firework);
-                    
-                    setTimeout(() => {
-                        firework.remove();
-                        createSparks(x, y);
-                    }, 1000);
-                }, i * 300);
-            }
-        }
-        
-        function createSparks(x, y) {
-            const colors = ['#fbbf24', '#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#a78bfa'];
-            
-            for (let i = 0; i < 30; i++) {
-                const spark = document.createElement('div');
-                spark.className = 'spark';
-                spark.style.left = x + 'px';
-                spark.style.top = y + 'px';
-                spark.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
-                const angle = (Math.PI * 2 * i) / 30;
-                const velocity = Math.random() * 100 + 50;
-                spark.style.setProperty('--x', Math.cos(angle) * velocity + 'px');
-                spark.style.setProperty('--y', Math.sin(angle) * velocity + 'px');
-                
-                document.body.appendChild(spark);
-                
-                setTimeout(() => spark.remove(), 1500);
-            }
-        }
-        
-        function showCelebration() {
-            const celebrationEmojis = ['🎉', '🎊', '✨', '🌟', '🔥', '💥', '🚀', '🏆', '💰', '🎯'];
-            const emoji = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
-            
-            const celebDiv = document.createElement('div');
-            celebDiv.className = 'celebration';
-            celebDiv.textContent = emoji;
-            document.body.appendChild(celebDiv);
-            
+    }
+    
+    function celebrateMonthlyIncrease(agent) {
+        const ftdElement = document.getElementById(`ftd-monthly-${agent.team}-${agent.stage}`);
+        if (ftdElement) {
+            ftdElement.classList.add('ftd-increase');
             setTimeout(() => {
-                celebDiv.remove();
+                ftdElement.classList.remove('ftd-increase');
             }, 2000);
         }
         
-        function playAchievementSound() {
-            if (!soundEnabled) return;
+        showAgentAnnouncement(agent.stage, agent.monthlyFTD);
+        createConfetti();
+        createMoneyRain();
+        createFireworks();
+        showCelebration();
+        playAchievementSound();
+    }
+    
+    function showAgentAnnouncement(stageName, ftdCount) {
+        const announcement = document.createElement('div');
+        announcement.className = 'agent-announcement';
+        announcement.textContent = `${stageName.toUpperCase()}: ${ftdCount}`;
+        document.body.appendChild(announcement);
+
+        setTimeout(() => {
+            announcement.remove();
+        }, 3000);
+    }
+    
+    function createConfetti() {
+        const colors = ['#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#f87171'];
+        
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                piece.style.animationDelay = Math.random() * 0.5 + 's';
+                
+                confetti.appendChild(piece);
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 4000);
+            }, i * 30);
+        }
+    }
+    
+    function createMoneyRain() {
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                const money = document.createElement('div');
+                money.className = 'money';
+                money.textContent = '$100';
+                money.style.left = Math.random() * 100 + '%';
+                money.style.top = '-50px';
+                money.style.animationDelay = Math.random() * 0.5 + 's';
+                money.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                
+                document.body.appendChild(money);
+                
+                setTimeout(() => money.remove(), 5000);
+            }, i * 100);
+        }
+    }
+    
+    function createFireworks() {
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight / 2;
+                
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + 'px';
+                firework.style.bottom = '0';
+                
+                document.body.appendChild(firework);
+                
+                setTimeout(() => {
+                    firework.remove();
+                    createSparks(x, y);
+                }, 1000);
+            }, i * 300);
+        }
+    }
+    
+    function createSparks(x, y) {
+        const colors = ['#fbbf24', '#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#a78bfa'];
+        
+        for (let i = 0; i < 30; i++) {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = x + 'px';
+            spark.style.top = y + 'px';
+            spark.style.background = colors[Math.floor(Math.random() * colors.length)];
             
-            const audio = document.getElementById('achievementSound');
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log('Не удалось воспроизвести звук:', e));
-            }
+            const angle = (Math.PI * 2 * i) / 30;
+            const velocity = Math.random() * 100 + 50;
+            spark.style.setProperty('--x', Math.cos(angle) * velocity + 'px');
+            spark.style.setProperty('--y', Math.sin(angle) * velocity + 'px');
+            
+            document.body.appendChild(spark);
+            
+            setTimeout(() => spark.remove(), 1500);
+        }
+    }
+    
+    function showCelebration() {
+        const celebrationEmojis = ['🎉', '🎊', '✨', '🌟', '🔥', '💥', '🚀', '🏆', '💰', '🎯'];
+        const emoji = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
+        
+        const celebDiv = document.createElement('div');
+        celebDiv.className = 'celebration';
+        celebDiv.textContent = emoji;
+        document.body.appendChild(celebDiv);
+        
+        setTimeout(() => {
+            celebDiv.remove();
+        }, 2000);
+    }
+    
+    function playAchievementSound() {
+        if (!soundEnabled) return;
+        
+        const audio = document.getElementById('achievementSound');
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Не удалось воспроизвести звук:', e));
+        }
+    }
+    
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleString('ru-RU');
+        const statusText = isOnline ? 'Последнее обновление' : 'Данные от';
+        document.getElementById('updateTime').textContent = `${statusText}: ${timeString}`;
+    }
+    
+    function showError(message) {
+        const container = document.getElementById('teamsContainer');
+        const loadingDiv = container.querySelector('.loading');
+        if (loadingDiv) {
+            loadingDiv.innerHTML = message;
+        } else {
+            container.innerHTML = `<div class="loading">${message}</div>`;
+        }
+    }
+    
+    async function init() {
+        createConnectionIndicator();
+        
+        // Сначала пытаемся загрузить из localStorage
+        const localData = loadFromLocalStorage();
+        if (localData) {
+            console.log('Загружены данные из localStorage');
+            cachedData = localData.data;
+            renderData(cachedData);
         }
         
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleString('ru-RU');
-            document.getElementById('updateTime').textContent = `Последнее обновление: ${timeString}`;
+        // Затем загружаем свежие данные
+        const data = await fetchData();
+        if (data) {
+            renderData(data);
         }
-        
-        function showError(message) {
-            const container = document.getElementById('teamsContainer');
-            container.innerHTML = `<div class="error">${message}</div>`;
+    }
+    
+    async function autoUpdate() {
+        const data = await fetchData();
+        if (data) {
+            renderData(data);
         }
-        
-        async function init() {
-            const data = await fetchData();
-            if (data) {
-                renderData(data);
-            }
-        }
-        
-        async function autoUpdate() {
-            const data = await fetchData();
-            if (data) {
-                renderData(data);
-            }
-        }
-        
-        init();
-        setInterval(autoUpdate, 5000);
-    </script>
+    }
+    
+    // Отслеживание статуса сети браузера
+    window.addEventListener('online', () => {
+        console.log('Подключение восстановлено');
+        updateConnectionStatus(true);
+        autoUpdate();
+    });
+    
+    window.addEventListener('offline', () => {
+        console.log('Подключение потеряно');
+        updateConnectionStatus(false);
+    });
+    
+    init();
+    setInterval(autoUpdate, UPDATE_INTERVAL);
+</script>
 </body>
 </html>
