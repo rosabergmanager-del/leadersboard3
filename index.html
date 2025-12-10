@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Leaderboard</title>
+    <title>🎄 Sales Leaderboard - Happy New Year! 🎄</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,14 +13,15 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a0a28 30%, #0f1a2e 70%, #1a0a1a 100%);
             min-height: 100vh;
             color: #e0e0e0;
             overflow-x: auto;
             position: relative;
         }
 
+        /* Звёздное небо */
         body::before {
             content: '';
             position: fixed;
@@ -28,14 +30,163 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(ellipse at top, rgba(59, 130, 246, 0.1), transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(99, 102, 241, 0.1), transparent 50%);
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 230px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 350px 200px, #fff, transparent),
+                radial-gradient(2px 2px at 420px 50px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 500px 180px, #fff, transparent),
+                radial-gradient(2px 2px at 580px 90px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 650px 220px, #fff, transparent),
+                radial-gradient(2px 2px at 720px 30px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 800px 160px, #fff, transparent),
+                radial-gradient(2px 2px at 880px 100px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 950px 250px, #fff, transparent);
+            background-size: 1000px 300px;
+            animation: twinkle 4s ease-in-out infinite alternate;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+
+        /* Северное сияние */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: 
+                radial-gradient(ellipse at 20% 0%, rgba(34, 197, 94, 0.15), transparent 50%),
+                radial-gradient(ellipse at 80% 0%, rgba(239, 68, 68, 0.1), transparent 50%),
+                radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.12), transparent 60%);
+            pointer-events: none;
+            animation: aurora 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes aurora {
+            0% { 
+                transform: translateX(-5%);
+                filter: hue-rotate(0deg);
+            }
+            100% { 
+                transform: translateX(5%);
+                filter: hue-rotate(30deg);
+            }
+        }
+
+        /* Гирлянда */
+        .garland {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            z-index: 100;
+            padding: 0 20px;
             pointer-events: none;
         }
 
+        .garland-wire {
+            position: absolute;
+            top: 8px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #2d5a27 10%, 
+                #3d7a37 50%, 
+                #2d5a27 90%, 
+                transparent 100%);
+            border-radius: 2px;
+        }
+
+        .light {
+            width: 14px;
+            height: 20px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            top: 5px;
+            animation: glow 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+        }
+
+        .light::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #4a7a44;
+            border-radius: 2px;
+        }
+
+        .light.red { color: #ef4444; background: radial-gradient(circle at 30% 30%, #ff6b6b, #ef4444, #dc2626); }
+        .light.green { color: #22c55e; background: radial-gradient(circle at 30% 30%, #4ade80, #22c55e, #16a34a); animation-delay: 0.3s; }
+        .light.blue { color: #3b82f6; background: radial-gradient(circle at 30% 30%, #60a5fa, #3b82f6, #2563eb); animation-delay: 0.6s; }
+        .light.yellow { color: #eab308; background: radial-gradient(circle at 30% 30%, #fde047, #eab308, #ca8a04); animation-delay: 0.9s; }
+        .light.purple { color: #a855f7; background: radial-gradient(circle at 30% 30%, #c084fc, #a855f7, #9333ea); animation-delay: 1.2s; }
+
+        @keyframes glow {
+            0%, 100% { 
+                opacity: 1;
+                filter: brightness(1.2);
+            }
+            50% { 
+                opacity: 0.6;
+                filter: brightness(0.8);
+            }
+        }
+
+        /* Снегопад */
+        .snowfall {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1em;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
         .container {
-            padding: 15px 20px;
+            padding: 60px 20px 15px;
             max-width: 100%;
+            position: relative;
+            z-index: 10;
         }
 
         .header {
@@ -49,15 +200,40 @@
         }
 
         .header h1 {
-            font-size: 3em;
-            text-shadow: 0 0 20px rgba(147, 197, 253, 0.5);
-            background: linear-gradient(90deg, #60a5fa, #93c5fd, #60a5fa);
-            background-size: 200% auto;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.5), 0 0 60px rgba(34, 197, 94, 0.3);
+            background: linear-gradient(90deg, #ef4444, #fbbf24, #22c55e, #60a5fa, #ef4444);
+            background-size: 300% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
+            animation: rainbow 5s linear infinite;
             flex: 0 1 auto;
             text-align: center;
+            position: relative;
+        }
+
+        .header h1::before {
+            content: '🎄';
+            position: absolute;
+            left: -50px;
+            animation: swing 2s ease-in-out infinite;
+        }
+
+        .header h1::after {
+            content: '🎄';
+            position: absolute;
+            right: -50px;
+            animation: swing 2s ease-in-out infinite reverse;
+        }
+
+        @keyframes rainbow {
+            to { background-position: 300% center; }
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
         }
 
         @keyframes shine {
@@ -72,15 +248,34 @@
             text-align: center;
             min-width: 220px;
             animation: fadeIn 1s ease;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(59, 130, 246, 0.1);
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #ef4444, #22c55e, #fbbf24) 1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 20px rgba(239, 68, 68, 0.1),
+                        0 0 30px rgba(34, 197, 94, 0.2);
             flex: 0 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .best-agent-card::before {
+            content: '❄️';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.2em;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .best-agent-card h3 {
             font-size: 1em;
             margin-bottom: 5px;
-            color: #60a5fa;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
         }
 
         .best-agent-card .agent-name {
@@ -118,11 +313,24 @@
             border-radius: 20px;
             padding: 15px;
             animation: slideInUp 0.8s ease;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 30px rgba(34, 197, 94, 0.05),
+                        0 0 20px rgba(239, 68, 68, 0.1);
             position: relative;
             max-height: 85vh;
             overflow-y: auto;
+        }
+
+        /* Новогодний уголок */
+        .team-column::before {
+            content: '🎁';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            opacity: 0.3;
+            animation: bounce 2s ease-in-out infinite;
         }
 
         .team-header {
@@ -131,20 +339,21 @@
             justify-content: center;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.5), rgba(34, 197, 94, 0.5), transparent) 1;
         }
 
         .team-icon {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #22c55e 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
             font-size: 20px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), 0 0 30px rgba(34, 197, 94, 0.3);
             animation: iconPulse 3s ease-in-out infinite;
         }
 
@@ -156,8 +365,8 @@
         .team-name {
             font-size: 1.3em;
             font-weight: bold;
-            color: #93c5fd;
-            text-shadow: 0 0 10px rgba(147, 197, 253, 0.4);
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
             word-break: break-word;
             text-align: center;
             flex: 1;
@@ -170,7 +379,7 @@
             margin-bottom: 10px;
             position: relative;
             transition: all 0.3s ease;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.2);
         }
         
         .sound-control {
@@ -178,7 +387,7 @@
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(99, 102, 241, 0.9));
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(34, 197, 94, 0.9));
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -186,15 +395,15 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border: 2px solid rgba(147, 197, 253, 0.5);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5), 0 0 30px rgba(34, 197, 94, 0.3);
             transition: all 0.3s ease;
             font-size: 24px;
         }
         
         .sound-control:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.7), 0 0 40px rgba(34, 197, 94, 0.5);
         }
         
         .sound-control::after {
@@ -202,7 +411,7 @@
             position: absolute;
             bottom: 70px;
             right: 0;
-            background: rgba(59, 130, 246, 0.9);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(34, 197, 94, 0.9));
             color: white;
             padding: 8px 12px;
             border-radius: 8px;
@@ -219,25 +428,25 @@
 
         .agent-card:hover {
             transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3), 0 5px 20px rgba(34, 197, 94, 0.2);
+            border-color: rgba(251, 191, 36, 0.5);
         }
 
         .agent-card.gold {
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.3));
-            border: 1px solid #fbbf24;
+            border: 2px solid #fbbf24;
             box-shadow: 0 0 25px rgba(251, 191, 36, 0.5), inset 0 0 15px rgba(251, 191, 36, 0.2);
         }
 
         .agent-card.silver {
             background: linear-gradient(135deg, rgba(156, 163, 175, 0.2), rgba(107, 114, 128, 0.3));
-            border: 1px solid #9ca3af;
+            border: 2px solid #9ca3af;
             box-shadow: 0 0 20px rgba(156, 163, 175, 0.5), inset 0 0 15px rgba(156, 163, 175, 0.2);
         }
 
         .agent-card.bronze {
             background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(180, 83, 9, 0.3));
-            border: 1px solid #d97706;
+            border: 2px solid #d97706;
             box-shadow: 0 0 20px rgba(217, 119, 6, 0.5), inset 0 0 15px rgba(217, 119, 6, 0.2);
         }
 
@@ -286,13 +495,13 @@
         }
 
         .agent-ftd.daily {
-            background: rgba(52, 211, 153, 0.2);
-            border: 1px solid rgba(52, 211, 153, 0.5);
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
         }
 
         .agent-ftd.monthly {
-            background: rgba(96, 165, 250, 0.2);
-            border: 1px solid rgba(96, 165, 250, 0.5);
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
 
         .ftd-label {
@@ -311,6 +520,10 @@
 
         .agent-ftd.daily .ftd-value {
             color: #34d399;
+        }
+
+        .agent-ftd.monthly .ftd-value {
+            color: #f87171;
         }
 
         .daily-update {
@@ -340,13 +553,13 @@
             top: 10px;
             right: 10px;
             padding: 8px 12px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.4));
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(34, 197, 94, 0.4));
             border-radius: 8px;
-            border: 1px solid rgba(96, 165, 250, 0.5);
+            border: 1px solid rgba(251, 191, 36, 0.5);
             font-size: 0.9em;
             font-weight: bold;
-            color: #93c5fd;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            color: #fbbf24;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
             display: flex;
             gap: 15px;
             align-items: center;
@@ -392,29 +605,29 @@
             z-index: 999;
             pointer-events: none;
             animation: announceSlide 3s ease-out forwards;
-            text-shadow: 0 0 30px rgba(96, 165, 250, 0.8), 0 0 60px rgba(59, 130, 246, 0.6);
-            background: linear-gradient(90deg, #60a5fa, #93c5fd, #60a5fa);
-            background-size: 200% auto;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 60px rgba(34, 197, 94, 0.6);
+            background: linear-gradient(90deg, #ef4444, #fbbf24, #22c55e, #ef4444);
+            background-size: 300% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: announceSlide 3s ease-out forwards, shine 1s linear infinite;
+            animation: announceSlide 6s ease-out forwards, rainbow 1s linear infinite;
         }
 
         @keyframes announceSlide {
             0% {
-                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                transform: translate(-50%, -50%) scale(0);
                 opacity: 0;
             }
             30% {
-                transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+                transform: translate(-50%, -50%) scale(1.2);
                 opacity: 1;
             }
             70% {
-                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
             }
             100% {
-                transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+                transform: translate(-50%, -50%) scale(0.8);
                 opacity: 0;
             }
         }
@@ -431,7 +644,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            background: linear-gradient(135deg, #ef4444, #22c55e);
             animation: confettiFall 3s ease-out forwards;
         }
 
@@ -564,11 +777,11 @@
         @keyframes ftdSuperPulse {
             0% { 
                 transform: scale(1) rotate(0deg);
-                box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
             }
             20% { 
                 transform: scale(1.3) rotate(10deg);
-                box-shadow: 0 0 25px rgba(52, 211, 153, 0.8);
+                box-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
             }
             40% { 
                 transform: scale(1.5) rotate(-10deg);
@@ -576,15 +789,15 @@
             }
             60% { 
                 transform: scale(1.3) rotate(10deg);
-                box-shadow: 0 0 25px rgba(167, 139, 250, 0.8);
+                box-shadow: 0 0 25px rgba(239, 68, 68, 0.8);
             }
             80% { 
                 transform: scale(1.1) rotate(-5deg);
-                box-shadow: 0 0 20px rgba(96, 165, 250, 0.7);
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.7);
             }
             100% { 
                 transform: scale(1) rotate(0deg);
-                box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
             }
         }
 
@@ -607,8 +820,8 @@
             text-align: center;
             padding: 50px;
             font-size: 1.5em;
-            color: #60a5fa;
-            text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+            color: #22c55e;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
         }
 
         .error {
@@ -619,6 +832,22 @@
             margin: 20px;
             text-align: center;
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Ёлка в углу */
+        .christmas-tree {
+            position: fixed;
+            bottom: 0;
+            right: 80px;
+            font-size: 80px;
+            z-index: 60;
+            filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.5));
+            animation: treeGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes treeGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.5)) brightness(1); }
+            100% { filter: drop-shadow(0 0 40px rgba(251, 191, 36, 0.8)) brightness(1.2); }
         }
 
         @media screen and (min-width: 1920px) {
@@ -640,12 +869,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            background: linear-gradient(135deg, #ef4444, #22c55e);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #60a5fa, #818cf8);
+            background: linear-gradient(135deg, #f87171, #4ade80);
         }
         
         .team-column::-webkit-scrollbar {
@@ -657,7 +886,7 @@
         }
         
         .team-column::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.5);
+            background: rgba(239, 68, 68, 0.5);
         }
 
         @media screen and (max-width: 1200px) {
@@ -668,7 +897,12 @@
             
             .header h1 {
                 order: 1;
-                font-size: 2.5em;
+                font-size: 2.2em;
+            }
+            
+            .header h1::before,
+            .header h1::after {
+                display: none;
             }
             
             .best-agent-card:first-of-type {
@@ -678,11 +912,16 @@
             .best-agent-card:last-of-type {
                 order: 3;
             }
+
+            .christmas-tree {
+                font-size: 50px;
+                right: 10px;
+            }
         }
 
         @media screen and (max-width: 768px) {
             .header h1 {
-                font-size: 2em;
+                font-size: 1.8em;
             }
             
             .best-agent-card {
@@ -708,6 +947,15 @@
             .agent-ftd {
                 min-width: 50px;
             }
+
+            .christmas-tree {
+                font-size: 40px;
+            }
+
+            .garland .light {
+                width: 10px;
+                height: 14px;
+            }
         }
 
         @media screen and (min-width: 1200px) {
@@ -722,6 +970,37 @@
     </style>
 </head>
 <body>
+    <!-- Гирлянда -->
+    <div class="garland">
+        <div class="garland-wire"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light yellow"></div>
+        <div class="light purple"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light yellow"></div>
+        <div class="light purple"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light yellow"></div>
+        <div class="light purple"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light yellow"></div>
+        <div class="light purple"></div>
+    </div>
+
+    <!-- Снегопад -->
+    <div class="snowfall" id="snowfall"></div>
+
+    <!-- Ёлка -->
+    <div class="christmas-tree">🎄</div>
+
     <div class="container">
         <div class="header">
             <div class="best-agent-card">
@@ -740,7 +1019,7 @@
         </div>
 
         <div id="teamsContainer" class="teams-container">
-            <div class="loading">Загрузка данных...</div>
+            <div class="loading">🎄 Загрузка данных... 🎄</div>
         </div>
 
         <div class="update-time" id="updateTime">
@@ -757,41 +1036,62 @@
     </audio>
 
     <script>
+    // Создание снегопада
+    function createSnowfall() {
+        const snowfall = document.getElementById('snowfall');
+        const snowflakes = ['❄', '❅', '❆', '✻', '✼', '❉', '❊', '✺'];
+        
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.fontSize = (Math.random() * 1 + 0.5) + 'em';
+                snowflake.style.opacity = Math.random() * 0.6 + 0.4;
+                snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowfall.appendChild(snowflake);
+            }, i * 200);
+        }
+    }
+
+    createSnowfall();
+
     const SHEET_ID = '1mErOW57MrU_fhQnRsI1ZSldw7dpd7lrl4yu7EgMpx1o';
     const API_KEY = 'AIzaSyCFS9Tse6vuK2O3PK4PyS0DDgRIzbC1F2E';
     const SHEET_NAME = 'Sheet5';
     
     let previousData = {};
-    let cachedData = null; // Кэш последних успешно загруженных данных
-    let teamIcons = ['👥', '🚀', '💼', '🎯', '⚡', '🔥', '💡', '🌟', '🏅', '💪'];
+    let cachedData = null;
+    let teamIcons = ['🎅', '🎄', '⭐', '🎁', '❄️', '🔔', '🦌', '🎿', '⛄', '🌟'];
     let soundEnabled = false;
     let consecutiveErrors = 0;
     let isOnline = true;
     const MAX_RETRIES = 3;
-    const UPDATE_INTERVAL = 30000; // 30 секунд вместо 5
+    const UPDATE_INTERVAL = 30000;
     
-    // Создаем индикатор подключения
     function createConnectionIndicator() {
-    const indicator = document.createElement('div');
-    indicator.id = 'connectionStatus';
-    indicator.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.9em;
-        font-weight: bold;
-        z-index: 1001;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    `;
-    document.body.appendChild(indicator);
-    updateConnectionStatus(true);
-}
+        const indicator = document.createElement('div');
+        indicator.id = 'connectionStatus';
+        indicator.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        `;
+        document.body.appendChild(indicator);
+        updateConnectionStatus(true);
+    }
     
     function updateConnectionStatus(online, lastUpdate = null) {
         const indicator = document.getElementById('connectionStatus');
@@ -800,7 +1100,7 @@
         isOnline = online;
         
         if (online) {
-            indicator.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9))';
+            indicator.style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.9))';
             indicator.style.border = '1px solid rgba(52, 211, 153, 0.5)';
             indicator.innerHTML = '🟢 Онлайн';
         } else {
@@ -811,7 +1111,6 @@
         }
     }
     
-    // Сохранение данных в localStorage для персистентности
     function saveToLocalStorage(data) {
         try {
             localStorage.setItem('leaderboardCache', JSON.stringify({
@@ -823,7 +1122,6 @@
         }
     }
     
-    // Загрузка данных из localStorage
     function loadFromLocalStorage() {
         try {
             const cached = localStorage.getItem('leaderboardCache');
@@ -860,7 +1158,7 @@
     async function fetchData(retryCount = 0) {
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
             
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
             const response = await fetch(url, { signal: controller.signal });
@@ -875,7 +1173,6 @@
             const processedData = processData(data.values);
             
             if (processedData) {
-                // Успешная загрузка
                 cachedData = processedData;
                 saveToLocalStorage(processedData);
                 consecutiveErrors = 0;
@@ -888,14 +1185,12 @@
             console.error('Ошибка при загрузке данных:', error);
             consecutiveErrors++;
             
-            // Попытка повторной загрузки
             if (retryCount < MAX_RETRIES) {
                 console.log(`Повторная попытка ${retryCount + 1}/${MAX_RETRIES}...`);
-                await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1))); // Экспоненциальная задержка
+                await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
                 return fetchData(retryCount + 1);
             }
             
-            // Используем кэшированные данные
             if (cachedData) {
                 console.log('Используем кэшированные данные');
                 const cached = loadFromLocalStorage();
@@ -908,7 +1203,6 @@
                 return cachedData;
             }
             
-            // Пытаемся загрузить из localStorage
             const localData = loadFromLocalStorage();
             if (localData) {
                 console.log('Загрузка из localStorage');
@@ -969,14 +1263,12 @@
     
     function renderData(data) {
         if (!data) {
-            // Не показываем ошибку, если есть кэшированные данные
             if (!cachedData) {
-                showError('Нет доступных данных. Ожидание подключения...');
+                showError('🎄 Нет доступных данных. Ожидание подключения... 🎄');
             }
             return;
         }
         
-        // Убираем сообщение об ошибке, если оно было
         const errorDiv = document.querySelector('.error');
         if (errorDiv) {
             errorDiv.remove();
@@ -1193,25 +1485,24 @@
         createConfetti();
         createMoneyRain();
         createFireworks();
-        showCelebration();
         playAchievementSound();
     }
     
     function showAgentAnnouncement(stageName, ftdCount) {
         const announcement = document.createElement('div');
         announcement.className = 'agent-announcement';
-        announcement.textContent = `${stageName.toUpperCase()}: ${ftdCount}`;
+        announcement.textContent = `🎄 ${stageName.toUpperCase()}: ${ftdCount} 🎄`;
         document.body.appendChild(announcement);
 
         setTimeout(() => {
             announcement.remove();
-        }, 3000);
+        }, 6000);
     }
     
     function createConfetti() {
-        const colors = ['#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#f87171'];
+        const colors = ['#ef4444', '#22c55e', '#fbbf24', '#3b82f6', '#a855f7', '#f97316'];
         
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 30; i++) {
             setTimeout(() => {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
@@ -1227,25 +1518,29 @@
                 confetti.appendChild(piece);
                 document.body.appendChild(confetti);
                 
-                setTimeout(() => confetti.remove(), 4000);
+                setTimeout(() => confetti.remove(), 8000);
             }, i * 30);
         }
     }
     
     function createMoneyRain() {
-        for (let i = 0; i < 20; i++) {
+        const items = ['💰', '🎁', '⭐', '🎄', '❄️'];
+        for (let i = 0; i < 15; i++) {
             setTimeout(() => {
                 const money = document.createElement('div');
                 money.className = 'money';
-                money.textContent = '$100';
+                money.textContent = items[Math.floor(Math.random() * items.length)];
                 money.style.left = Math.random() * 100 + '%';
                 money.style.top = '-50px';
                 money.style.animationDelay = Math.random() * 0.5 + 's';
                 money.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                money.style.background = 'transparent';
+                money.style.fontSize = '2em';
+                money.style.boxShadow = 'none';
                 
                 document.body.appendChild(money);
                 
-                setTimeout(() => money.remove(), 5000);
+                setTimeout(() => money.remove(), 10000);
             }, i * 100);
         }
     }
@@ -1272,7 +1567,7 @@
     }
     
     function createSparks(x, y) {
-        const colors = ['#fbbf24', '#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#a78bfa'];
+        const colors = ['#ef4444', '#22c55e', '#fbbf24', '#3b82f6', '#a855f7', '#ffffff'];
         
         for (let i = 0; i < 30; i++) {
             const spark = document.createElement('div');
@@ -1293,7 +1588,7 @@
     }
     
     function showCelebration() {
-        const celebrationEmojis = ['🎉', '🎊', '✨', '🌟', '🔥', '💥', '🚀', '🏆', '💰', '🎯'];
+        const celebrationEmojis = ['🎉', '🎊', '✨', '🌟', '🎄', '🎁', '🎅', '⭐', '❄️', '🔔'];
         const emoji = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
         
         const celebDiv = document.createElement('div');
@@ -1320,7 +1615,7 @@
         const now = new Date();
         const timeString = now.toLocaleString('ru-RU');
         const statusText = isOnline ? 'Последнее обновление' : 'Данные от';
-        document.getElementById('updateTime').textContent = `${statusText}: ${timeString}`;
+        document.getElementById('updateTime').textContent = `🎄 ${statusText}: ${timeString} 🎄`;
     }
     
     function showError(message) {
@@ -1336,7 +1631,6 @@
     async function init() {
         createConnectionIndicator();
         
-        // Сначала пытаемся загрузить из localStorage
         const localData = loadFromLocalStorage();
         if (localData) {
             console.log('Загружены данные из localStorage');
@@ -1344,7 +1638,6 @@
             renderData(cachedData);
         }
         
-        // Затем загружаем свежие данные
         const data = await fetchData();
         if (data) {
             renderData(data);
@@ -1358,7 +1651,6 @@
         }
     }
     
-    // Отслеживание статуса сети браузера
     window.addEventListener('online', () => {
         console.log('Подключение восстановлено');
         updateConnectionStatus(true);
@@ -1372,6 +1664,6 @@
     
     init();
     setInterval(autoUpdate, UPDATE_INTERVAL);
-</script>
+    </script>
 </body>
 </html>
